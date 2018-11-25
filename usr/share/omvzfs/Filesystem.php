@@ -11,64 +11,64 @@ require_once("Dataset.php");
  */
 class OMVModuleZFSFilesystem extends OMVModuleZFSDataset {
 
-	use Cloneable;
+    use Cloneable;
 
-	// Associations
-	// Operations
+    // Associations
+    // Operations
 
-	/**
-	 * Constructor. If the Dataset already exists in the system the object will be updated with all
-	 * associated properties from commandline.
-	 *
-	 * @param string $name Name of the new Dataset
-	 * @return void
-	 * @access public
-	 */
-	public function __construct($name) {
-		$this->name = $name;
-		$cmd = "zfs list -H -t filesystem \"" . $name . "\" 2>&1";
-		try {
-			OMVModuleZFSUtil::exec($cmd, $out, $res);
-		}
-		catch (\OMV\ExecException $e) {
+    /**
+     * Constructor. If the Dataset already exists in the system the object will be updated with all
+     * associated properties from commandline.
+     *
+     * @param string $name Name of the new Dataset
+     * @return void
+     * @access public
+     */
+    public function __construct($name) {
+        $this->name = $name;
+        $cmd = "zfs list -H -t filesystem \"" . $name . "\" 2>&1";
+        try {
+            OMVModuleZFSUtil::exec($cmd, $out, $res);
+        }
+        catch (\OMV\ExecException $e) {
 
-		}
-	}
+        }
+    }
 
-	public function exists(){
-		try {
-			$cmd = "zfs list -H -t filesystem \"" . $this->name . "\" 2>&1";
-			OMVModuleZFSUtil::exec($cmd, $out, $res);
-			return TRUE;
-		}
-		catch (\OMV\ExecException $e) {
-			return FALSE;
-		}
-	}
+    public function exists(){
+        try {
+            $cmd = "zfs list -H -t filesystem \"" . $this->name . "\" 2>&1";
+            OMVModuleZFSUtil::exec($cmd, $out, $res);
+            return TRUE;
+        }
+        catch (\OMV\ExecException $e) {
+            return FALSE;
+        }
+    }
 
-	public static function getAllFilesystems(){
-		$cmd = "zfs list -H -o name,mountpoint -t filesystem";
-		OMVModuleZFSUtil::exec($cmd, $out, $res);
-		$filesystems=[];
-		foreach($out as $line) {
-			$tmpary = preg_split('/\t+/', $line);
-			$filesystems[]=new OMVModuleZFSFilesystem($tmpary[0]);
-		}
-		return $filesystems;
-	}
+    public static function getAllFilesystems(){
+        $cmd = "zfs list -H -o name,mountpoint -t filesystem";
+        OMVModuleZFSUtil::exec($cmd, $out, $res);
+        $filesystems=[];
+        foreach($out as $line) {
+            $tmpary = preg_split('/\t+/', $line);
+            $filesystems[]=new OMVModuleZFSFilesystem($tmpary[0]);
+        }
+        return $filesystems;
+    }
 
 
-	/**
-	 * Craete a Dataset on commandline.
-	 *
-	 * @return OMVModuleZFSFilesystem
-	 * @access public
-	 */
-	public static function create($name) {
-		$cmd = "zfs create -p \"" . $name . "\" 2>&1";
-		OMVModuleZFSUtil::exec($cmd,$out,$res);
-		return new OMVModuleZFSFilesystem($name);
-	}
+    /**
+     * Craete a Dataset on commandline.
+     *
+     * @return OMVModuleZFSFilesystem
+     * @access public
+     */
+    public static function create($name) {
+        $cmd = "zfs create -p \"" . $name . "\" 2>&1";
+        OMVModuleZFSUtil::exec($cmd,$out,$res);
+        return new OMVModuleZFSFilesystem($name);
+    }
 
     /**
      *
@@ -100,62 +100,62 @@ class OMVModuleZFSFilesystem extends OMVModuleZFSDataset {
         return $avail + $used;
     }
 
-	/**
-	 * Get the mountpoint of the Dataset
-	 *
-	 * @return string $mountPoint
-	 * @access public
-	 */
-	public function getMountPoint() {
-		return $this->properties["mountpoint"]["value"];
-	}
+    /**
+     * Get the mountpoint of the Dataset
+     *
+     * @return string $mountPoint
+     * @access public
+     */
+    public function getMountPoint() {
+        return $this->properties["mountpoint"]["value"];
+    }
 
 
-	public function getChildren(){
-		$name = $this->name;
-		$cmd="zfs list -H -r -t filesystem $name 2>&1";
-		OMVModuleZFSUtil::exec($cmd,$out,$res);
-		$children=[];
-		foreach ($out as $line) {
-			$tmpary = preg_split('/\t+/', $line);
-			$children[]=new OMVModuleZFSFilesystem($tmpary[0]);
-		}
-		return $children;
-	}
-	/**
-	 * Upgrades the Dataset to latest filesystem version
-	 *
-	 * @return void
-	 * @access public
-	 */
-	public function upgrade() {
-		$cmd = "zfs upgrade \"" . $this->name . "\" 2>&1";
-		OMVModuleZFSUtil::exec($cmd,$out,$res);
-	}
+    public function getChildren(){
+        $name = $this->name;
+        $cmd="zfs list -H -r -t filesystem $name 2>&1";
+        OMVModuleZFSUtil::exec($cmd,$out,$res);
+        $children=[];
+        foreach ($out as $line) {
+            $tmpary = preg_split('/\t+/', $line);
+            $children[]=new OMVModuleZFSFilesystem($tmpary[0]);
+        }
+        return $children;
+    }
+    /**
+     * Upgrades the Dataset to latest filesystem version
+     *
+     * @return void
+     * @access public
+     */
+    public function upgrade() {
+        $cmd = "zfs upgrade \"" . $this->name . "\" 2>&1";
+        OMVModuleZFSUtil::exec($cmd,$out,$res);
+    }
 
-	/**
-	 * Mount the Dataset
-	 *
-	 * @return void
-	 * @access public
-	 */
-	public function mount() {
-		$cmd = "zfs mount \"" . $this->name . "\" 2>&1";
-		OMVModuleZFSUtil::exec($cmd,$out,$res);
-		$this->updateProperty("mounted");
-	}
+    /**
+     * Mount the Dataset
+     *
+     * @return void
+     * @access public
+     */
+    public function mount() {
+        $cmd = "zfs mount \"" . $this->name . "\" 2>&1";
+        OMVModuleZFSUtil::exec($cmd,$out,$res);
+        $this->updateProperty("mounted");
+    }
 
-	/**
-	 * Unmount the Dataset
-	 *
-	 * @return void
-	 * @access public
-	 */
-	public function unmount() {
-		$cmd = "zfs unmount \"" . $this->name . "\" 2>&1";
-		OMVModuleZFSUtil::exec($cmd,$out,$res);
-		$this->updateProperty("mounted");
-	}
+    /**
+     * Unmount the Dataset
+     *
+     * @return void
+     * @access public
+     */
+    public function unmount() {
+        $cmd = "zfs unmount \"" . $this->name . "\" 2>&1";
+        OMVModuleZFSUtil::exec($cmd,$out,$res);
+        $this->updateProperty("mounted");
+    }
 
 }
 

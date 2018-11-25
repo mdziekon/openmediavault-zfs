@@ -21,7 +21,7 @@ class OMVModuleZFSUtil {
      * @var  REGEX_DEVBYID_DEVNAME
      * @access public
      */
-	const REGEX_DEVBYID_DEVNAME = "/^.*\/([A-Za-z0-9]+.*)$/";
+    const REGEX_DEVBYID_DEVNAME = "/^.*\/([A-Za-z0-9]+.*)$/";
 
     /**
      * Get the /dev/sdX device name from /dev/disk/by-uuid
@@ -260,100 +260,100 @@ class OMVModuleZFSUtil {
             $tmp = [];
 
             switch ($type) {
-            case "filesystem":
-                if (strpos($path, '/') === false) {
-                    // This is a Pool
-                    $tmp = array(
-                        'id' => $prefix . $path,
-                        'parentid' => 'root',
-                        'name' => $path,
-                        'type' => 'Pool',
-                        'icon' => 'images/raid.png',
-                        'expanded' => $expanded,
-                        'path' => $path
-                    );
-                    $pool = new OMVModuleZFSZpool($path);
-                    $pool->updateAllProperties();
-                    $tmp['origin'] = "n/a";
-                    $tmp['size'] = OMVModuleZFSUtil::bytesToSize($pool->getSize());
-                    $tmp['used'] = OMVModuleZFSUtil::bytesToSize($pool->getUsed());
-                    $tmp['available'] = OMVModuleZFSUtil::bytesToSize($pool->getAvailable());
-                    $tmp['mountpoint'] = $pool->getMountPoint();
-                    $tmp['lastscrub'] = $pool->getLatestScrub();
-                    $tmp['state'] = $pool->getPoolState();
-                    $tmp['status'] = $pool->getPoolStatus();
-                    array_push($objects, $tmp);
-                } else {
-                    // This is a Filesystem
+                case "filesystem":
+                    if (strpos($path, '/') === false) {
+                        // This is a Pool
+                        $tmp = array(
+                            'id' => $prefix . $path,
+                            'parentid' => 'root',
+                            'name' => $path,
+                            'type' => 'Pool',
+                            'icon' => 'images/raid.png',
+                            'expanded' => $expanded,
+                            'path' => $path
+                        );
+                        $pool = new OMVModuleZFSZpool($path);
+                        $pool->updateAllProperties();
+                        $tmp['origin'] = "n/a";
+                        $tmp['size'] = OMVModuleZFSUtil::bytesToSize($pool->getSize());
+                        $tmp['used'] = OMVModuleZFSUtil::bytesToSize($pool->getUsed());
+                        $tmp['available'] = OMVModuleZFSUtil::bytesToSize($pool->getAvailable());
+                        $tmp['mountpoint'] = $pool->getMountPoint();
+                        $tmp['lastscrub'] = $pool->getLatestScrub();
+                        $tmp['state'] = $pool->getPoolState();
+                        $tmp['status'] = $pool->getPoolStatus();
+                        array_push($objects, $tmp);
+                    } else {
+                        // This is a Filesystem
+                        preg_match('/(.*)\/(.*)$/', $path, $result);
+                        $tmp = array(
+                            'id' => $prefix . $path,
+                            'parentid' => $prefix . $result[1],
+                            'name' => $result[2],
+                            'icon' => "images/filesystem.png",
+                            'path' => $path,
+                            'expanded' => $expanded
+                        );
+                        $ds =  new OMVModuleZFSFilesystem($path);
+                        $ds->updateAllProperties();
+                        // $props = $ds->getProperties();
+                        // print_r($props);
+                        if ($ds->isClone()) {
+                            // This is a cloned Filesystem
+                            $tmp['origin'] = $ds->getOrigin();
+                        } else {
+                            // This is a standard Filesystem.
+                            $tmp['origin'] = "n/a";
+                        }
+                        $tmp['type'] = ucfirst($type);
+                        $tmp['size'] = OMVModuleZFSUtil::bytesToSize($ds->getSize());
+                        $tmp['used'] = OMVModuleZFSUtil::bytesToSize($ds->getUsed());
+                        $tmp['available'] = OMVModuleZFSUtil::bytesToSize($ds->getAvailable());
+                        $tmp['mountpoint'] = $ds->getMountPoint();
+                        $tmp['lastscrub'] = "n/a";
+                        $tmp['state'] = "n/a";
+                        $tmp['status'] = "n/a";
+                        array_push($objects, $tmp);
+                    }
+                    break;
+
+                case "volume":
                     preg_match('/(.*)\/(.*)$/', $path, $result);
                     $tmp = array(
                         'id' => $prefix . $path,
                         'parentid' => $prefix . $result[1],
                         'name' => $result[2],
-                        'icon' => "images/filesystem.png",
+                        'type' => ucfirst($type),
                         'path' => $path,
                         'expanded' => $expanded
                     );
-                    $ds =  new OMVModuleZFSFilesystem($path);
-                    $ds->updateAllProperties();
-                    // $props = $ds->getProperties();
-                    // print_r($props);
-                    if ($ds->isClone()) {
-                        // This is a cloned Filesystem
-                        $tmp['origin'] = $ds->getOrigin();
+                    $vol = new OMVModuleZFSZvol($path);
+                    $vol->updateAllProperties();
+                    if ($vol->isClone()) {
+                        // This is a cloned Volume
+                        $tmp['origin'] = $vol->getOrigin();
                     } else {
-                        // This is a standard Filesystem.
+                        // This is a standard Volume
                         $tmp['origin'] = "n/a";
                     }
                     $tmp['type'] = ucfirst($type);
-                    $tmp['size'] = OMVModuleZFSUtil::bytesToSize($ds->getSize());
-                    $tmp['used'] = OMVModuleZFSUtil::bytesToSize($ds->getUsed());
-                    $tmp['available'] = OMVModuleZFSUtil::bytesToSize($ds->getAvailable());
-                    $tmp['mountpoint'] = $ds->getMountPoint();
+                    $tmp['size'] = OMVModuleZFSUtil::bytesToSize($vol->getSize());
+                    $tmp['used'] = OMVModuleZFSUtil::bytesToSize($vol->getUsed());
+                    $tmp['available'] = OMVModuleZFSUtil::bytesToSize($vol->getAvailable());
+                    $tmp['mountpoint'] = "n/a";
                     $tmp['lastscrub'] = "n/a";
+                    if (!($vol->isThinVol())) {
+                        $tmp['icon'] = "images/save.png";
+                    } else {
+                        $tmp['icon'] = "images/zfs_thinvol.png";
+                    }
                     $tmp['state'] = "n/a";
                     $tmp['status'] = "n/a";
                     array_push($objects, $tmp);
-                }
-                break;
+                    break;
 
-            case "volume":
-                preg_match('/(.*)\/(.*)$/', $path, $result);
-                $tmp = array(
-                    'id' => $prefix . $path,
-                    'parentid' => $prefix . $result[1],
-                    'name' => $result[2],
-                    'type' => ucfirst($type),
-                    'path' => $path,
-                    'expanded' => $expanded
-                );
-                $vol = new OMVModuleZFSZvol($path);
-                $vol->updateAllProperties();
-                if ($vol->isClone()) {
-                    // This is a cloned Volume
-                    $tmp['origin'] = $vol->getOrigin();
-                } else {
-                    // This is a standard Volume
-                    $tmp['origin'] = "n/a";
-                }
-                $tmp['type'] = ucfirst($type);
-                $tmp['size'] = OMVModuleZFSUtil::bytesToSize($vol->getSize());
-                $tmp['used'] = OMVModuleZFSUtil::bytesToSize($vol->getUsed());
-                $tmp['available'] = OMVModuleZFSUtil::bytesToSize($vol->getAvailable());
-                $tmp['mountpoint'] = "n/a";
-                $tmp['lastscrub'] = "n/a";
-                if (!($vol->isThinVol())) {
-                    $tmp['icon'] = "images/save.png";
-                } else {
-                    $tmp['icon'] = "images/zfs_thinvol.png";
-                }
-                $tmp['state'] = "n/a";
-                $tmp['status'] = "n/a";
-                array_push($objects, $tmp);
-                break;
-
-            default:
-                break;
+                default:
+                    break;
             }
         }
         return $objects;

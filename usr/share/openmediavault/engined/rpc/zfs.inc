@@ -114,34 +114,34 @@ class OMVRpcServiceZFS extends ServiceAbstract {
         $disks = preg_split("/[,;]/", $params['devices']);
 
         switch ($params['devalias']) {
-        case "path":
-            try {
-                if (file_exists("/dev/disk/by-path/")) {
-                    $tmp_disks = [];
-                    foreach ($disks as $disk) {
-                        $tmp_disks[] = OMVModuleZFSUtil::getDiskPath($disk);
+            case "path":
+                try {
+                    if (file_exists("/dev/disk/by-path/")) {
+                        $tmp_disks = [];
+                        foreach ($disks as $disk) {
+                            $tmp_disks[] = OMVModuleZFSUtil::getDiskPath($disk);
+                        }
+                        $disks = $tmp_disks;
                     }
-                    $disks = $tmp_disks;
+                } catch (Exception $e) {
+                    //Do nothing if an excpetion is thrown (fallback on /dev/)
                 }
-            } catch (Exception $e) {
-                //Do nothing if an excpetion is thrown (fallback on /dev/)
-            }
-            break;
-        case "id":
-            try {
-                if (file_exists("/dev/disk/by-id/")) {
-                    $tmp_disks = [];
-                    foreach ($disks as $disk) {
-                        $tmp_disks[] = OMVModuleZFSUtil::getDiskId($disk);
+                break;
+            case "id":
+                try {
+                    if (file_exists("/dev/disk/by-id/")) {
+                        $tmp_disks = [];
+                        foreach ($disks as $disk) {
+                            $tmp_disks[] = OMVModuleZFSUtil::getDiskId($disk);
+                        }
+                        $disks = $tmp_disks;
                     }
-                    $disks = $tmp_disks;
+                } catch (Exception $e) {
+                    //Do nothing if an excpetion is thrown (fallback on /dev/)
                 }
-            } catch (Exception $e) {
-                //Do nothing if an excpetion is thrown (fallback on /dev/)
-            }
-            break;
-        case "dev":
-            break;
+                break;
+            case "dev":
+                break;
         }
 
         $vdev = new OMVModuleZFSVdev($params['name'], $pooltype, $disks);
@@ -369,7 +369,8 @@ class OMVRpcServiceZFS extends ServiceAbstract {
         $this->validateMethodParams($params, 'rpc.zfs.inherit');
 
         // Create the background process.
-        return $this->execBgProc(function($bgStatusFilename, $bgOutputFilename)
+        return $this->execBgProc(
+            function($bgStatusFilename, $bgOutputFilename)
             use ($params) {
                 switch ($params['type']) {
                     case "Filesystem":

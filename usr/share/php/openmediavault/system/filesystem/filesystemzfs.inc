@@ -3,7 +3,7 @@ namespace OMV\System\Filesystem;
 require_once("/usr/share/omvzfs/Filesystem.php");
 
 class FilesystemZfs implements FilesystemInterface,
-	SharedFolderCandidateInterface
+    SharedFolderCandidateInterface
 {
     public function __construct($fsName)
     {
@@ -131,59 +131,59 @@ class FilesystemZfs implements FilesystemInterface,
      */
     public function getDeviceFileById()
     {
-		return NULL;
+        return NULL;
     }
 
-	/**
-	 * Check whether the device has a /dev/disk/by-id/xxx device path.
-	 * @return Returns TRUE if a disk/by-id device path exists,
-	 *   otherwise FALSE.
-	 */
-	public function hasDeviceFileById() {
-		return FALSE;
-	}
+    /**
+     * Check whether the device has a /dev/disk/by-id/xxx device path.
+     * @return Returns TRUE if a disk/by-id device path exists,
+     *   otherwise FALSE.
+     */
+    public function hasDeviceFileById() {
+        return FALSE;
+    }
 
     /**
      * Get the device path by UUID, e.g.
      * \li /dev/disk/by-uuid/ad3ee177-777c-4ad3-8353-9562f85c0895
      * \li /dev/disk/by-uuid/2ED43920D438EC29 (NTFS)
-	 * @return The device file (/dev/disk/by-uuid/xxx) if available,
-	 *   otherwise NULL will be returned.
+     * @return The device file (/dev/disk/by-uuid/xxx) if available,
+     *   otherwise NULL will be returned.
      */
     public function getDeviceFileByUuid()
     {
         return NULL;
     }
 
-	/**
-	 * Check whether the filesystem has a /dev/disk/by-uuid/xxx device path.
-	 * @return Returns TRUE if a disk/by-uuid device path exists,
-	 *   otherwise FALSE.
-	 */
-	public function hasDeviceFileByUuid() {
-		return FALSE;
-	}
+    /**
+     * Check whether the filesystem has a /dev/disk/by-uuid/xxx device path.
+     * @return Returns TRUE if a disk/by-uuid device path exists,
+     *   otherwise FALSE.
+     */
+    public function hasDeviceFileByUuid() {
+        return FALSE;
+    }
 
     /**
      * Get the device path by label, e.g. <ul>
      * \li /dev/disk/by-label/data
      * </ul>
-	 * @return The device file (/dev/disk/by-label/xxx) if available,
-	 *   otherwise NULL will be returned.
+     * @return The device file (/dev/disk/by-label/xxx) if available,
+     *   otherwise NULL will be returned.
      */
     public function getDeviceFileByLabel()
     {
         return NULL;
     }
 
-	/**
-	 * Check whether the filesystem has a /dev/disk/by-label/xxx device path.
-	 * @return Returns TRUE if a disk/by-label device path exists,
-	 *   otherwise FALSE.
-	 */
-	public function hasDeviceFileByLabel() {
-		return FALSE;
-	}
+    /**
+     * Check whether the filesystem has a /dev/disk/by-label/xxx device path.
+     * @return Returns TRUE if a disk/by-label device path exists,
+     *   otherwise FALSE.
+     */
+    public function hasDeviceFileByLabel() {
+        return FALSE;
+    }
 
     /**
      * Get a predictable device file in the following order:
@@ -246,8 +246,8 @@ class FilesystemZfs implements FilesystemInterface,
      * \li /dev/sdb1 => /dev/sdb
      * \li /dev/cciss/c0d0p2 => /dev/cciss/c0d0
      * </ul>
-	 * @return The device file of the underlying storage device or NULL
-	 *   on failure.
+     * @return The device file of the underlying storage device or NULL
+     *   on failure.
      */
     public function getParentDeviceFile()
     {

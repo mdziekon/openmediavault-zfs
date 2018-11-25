@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- class OMVModuleZFS extends \OMV\Engine\Module\ServiceAbstract
+class OMVModuleZFS extends \OMV\Engine\Module\ServiceAbstract
     implements \OMV\Engine\Notify\IListener {
     /**
      * Get the module name.
