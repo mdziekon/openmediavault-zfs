@@ -20,6 +20,7 @@
         "squizlabs/php_codesniffer": "*"
     },
     "scripts": {
+        "ci-lint": "phpcs usr/share --standard=phpcs.xml --extensions=php,inc",
         "ci-test-unit": "phpunit --bootstrap vendor/autoload.php --colors=always tests/php/"
     }
 }
