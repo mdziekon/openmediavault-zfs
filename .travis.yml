@@ -11,5 +11,10 @@ php:
 install:
     - composer install
 
-script:
-    - composer run-script test
+jobs:
+    include:
+        - &STANDARD_TEST_JOB
+            stage: PHPUnit Tests
+            php: 7.0
+            script:
+                - composer run-script ci-test-unit

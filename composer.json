@@ -20,6 +20,6 @@
         "squizlabs/php_codesniffer": "*"
     },
     "scripts": {
-        "test": "phpunit --bootstrap vendor/autoload.php --colors=always tests/php/"
+        "ci-test-unit": "phpunit --bootstrap vendor/autoload.php --colors=always tests/php/"
     }
 }
