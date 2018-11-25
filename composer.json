@@ -16,7 +16,8 @@
         "php": "^7.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.5"
+        "phpunit/phpunit": "^6.5",
+        "squizlabs/php_codesniffer": "*"
     },
     "scripts": {
         "test": "phpunit --bootstrap vendor/autoload.php --colors=always tests/php/"
